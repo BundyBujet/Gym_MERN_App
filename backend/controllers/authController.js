@@ -49,7 +49,37 @@ module.exports.signup_post = async (req, res) => {
   const { email, password, username, profile } = req.body;
   try {
     // await creating user in DB
-    const user = await User.create({ email, password, username, profile });
+    const user = await User.create({
+      email,
+      password,
+      username,
+      profile,
+    });
+
+    // generate a jwt
+    const token = createToken(user._id, user.role);
+
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+
+    // send user obj back
+    res.status(200).json({ user: user._id, profile: user.profile });
+  } catch (error) {
+    const errors = handleError(error);
+    res.status(400).json({ errors });
+  }
+};
+
+module.exports.admin_signup_post = async (req, res) => {
+  const { email, password, username, profile, role } = req.body;
+  try {
+    // await creating user in DB
+    const user = await User.create({
+      email,
+      password,
+      username,
+      profile,
+      role,
+    });
 
     // generate a jwt
     const token = createToken(user._id, user.role);

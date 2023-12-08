@@ -3,7 +3,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/authRoutes");
-const { requireAuth } = require("./middleware/authMiddleware");
+const {
+  authorizeUser,
+  authorizeAdmin,
+} = require("./middleware/authMiddleware");
 
 const app = express();
 
@@ -24,6 +27,9 @@ mongoose
 
 app.use(authRoutes);
 
-app.get("/profile", requireAuth, (req, res) =>
+app.get("/profile", authorizeUser, (req, res) =>
   res.json({ res: "Profile Page" })
+);
+app.get("/dashboard", authorizeAdmin, (req, res) =>
+  res.json({ res: "Dashboard Page" })
 );
