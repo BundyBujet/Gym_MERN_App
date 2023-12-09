@@ -2,6 +2,7 @@ const { Router } = require("express");
 const { authorizeAdmin } = require("../middleware/authMiddleware");
 const userController = require("../controllers/admin/usersController");
 const profileController = require("../controllers/admin/profileController");
+const classController = require("../controllers/admin/classController");
 
 const router = Router();
 
@@ -24,5 +25,12 @@ router.put(
   userController.update_user
 );
 router.get("/api/admin/profile", authorizeAdmin, profileController.get_profile);
+
+// create a Gym's Class
+router.post(
+  "/api/admin/gymClass",
+  authorizeAdmin,
+  classController.create_gym_class
+);
 
 module.exports = router;
