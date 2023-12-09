@@ -2,27 +2,19 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 const verifyTokenRole = (token) => {
-  let role = "";
+  let userInfo = {};
 
   jwt.verify(token, process.env.TOKEN_KEY, (err, decodedToken) => {
     if (err) {
       console.log(err.message);
-      return role;
+      return userInfo;
     }
-    if (decodedToken.role === "member") {
-      role = "member";
-      return role;
-    }
-    if (decodedToken.role === "admin") {
-      role = "admin";
-      return role;
-    }
-    if (decodedToken.role === "instructor") {
-      role = "instructor";
-      return role;
+    if (decodedToken) {
+      userInfo = decodedToken;
+      return userInfo;
     }
   });
-  return role;
+  return userInfo;
 };
 
 const authorizeUser = (req, res, next) => {
@@ -31,9 +23,11 @@ const authorizeUser = (req, res, next) => {
   // check jwt exist and verify
 
   if (token) {
-    const role = verifyTokenRole(token);
-    console.log(role);
-    if (role === "member") {
+    const userInfo = verifyTokenRole(token);
+    console.log(userInfo.role);
+    if (userInfo.role === "member") {
+      // attach the user info to the req body
+      req.userInfo = userInfo;
       next();
     } else {
       res.status(403).json({ status: "Access denied" });
@@ -47,9 +41,11 @@ const authorizeAdmin = (req, res, next) => {
   const token = req.cookies.jwt;
 
   if (token) {
-    const role = verifyTokenRole(token);
-    console.log(role);
-    if (role === "admin") {
+    const userInfo = verifyTokenRole(token);
+    console.log(userInfo.role);
+    if (userInfo.role === "admin") {
+      // attach the user info to the req body
+      req.userInfo = userInfo;
       next();
     } else {
       res.status(403).json({ status: "Access denied" });

@@ -16,6 +16,24 @@ module.exports.get_All_users = async (req, res) => {
   }
 };
 
+module.exports.get_One_user = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    // check for user
+    const existingUser = await User.findOne({ _id: userId });
+
+    if (!existingUser) {
+      return res.status(404).json({ status: "User not found" });
+    }
+
+    res.status(200).json(existingUser);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ status: "Can't access DB" });
+  }
+};
+
 module.exports.delete_One_user = async (req, res) => {
   const userId = req.params.userId;
 
