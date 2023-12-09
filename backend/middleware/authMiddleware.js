@@ -31,17 +31,15 @@ const authorizeUser = (req, res, next) => {
   // check jwt exist and verify
 
   if (token) {
-    jwt.verify(token, process.env.TOKEN_KEY, (err, decodedToken) => {
-      if (err) {
-        console.log(err.message);
-        res.json({ status: "Token not valid" });
-      } else {
-        console.log(decodedToken);
-        next();
-      }
-    });
+    const role = verifyTokenRole(token);
+    console.log(role);
+    if (role === "member") {
+      next();
+    } else {
+      res.status(403).json({ status: "Access denied" });
+    }
   } else {
-    res.json({ status: "Please login first" });
+    res.status(401).json({ status: "Please login first" });
   }
 };
 
@@ -54,10 +52,10 @@ const authorizeAdmin = (req, res, next) => {
     if (role === "admin") {
       next();
     } else {
-      res.json({ status: "Access denied" });
+      res.status(403).json({ status: "Access denied" });
     }
   } else {
-    res.json({ status: "Please login first" });
+    res.status(401).json({ status: "Please login first" });
   }
 };
 
