@@ -55,4 +55,22 @@ const authorizeAdmin = (req, res, next) => {
   }
 };
 
-module.exports = { authorizeUser, authorizeAdmin };
+const authorizeInstructor = (req, res, next) => {
+  const token = req.cookies.jwt;
+
+  if (token) {
+    const userInfo = verifyTokenRole(token);
+    console.log("LogeIn As:", userInfo.role);
+    if (userInfo.role === "instructor") {
+      // attach the user info to the req body
+      req.userInfo = userInfo;
+      next();
+    } else {
+      res.status(403).json({ status: "Access denied" });
+    }
+  } else {
+    res.status(401).json({ status: "Please login first" });
+  }
+};
+
+module.exports = { authorizeUser, authorizeAdmin, authorizeInstructor };

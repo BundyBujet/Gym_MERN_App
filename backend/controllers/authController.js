@@ -1,6 +1,7 @@
 require("dotenv").config();
 const User = require("../models/Users");
 const Admin = require("../models/Admin");
+const Instructor = require("../models/Instructor");
 const jwt = require("jsonwebtoken");
 
 const handleError = (err) => {
@@ -47,23 +48,36 @@ const createToken = (id, role) => {
 };
 
 module.exports.signup_post = async (req, res) => {
-  const { email, password, username, profile } = req.body;
+  const { email, password, username, profile, isInstructor } = req.body;
   try {
-    // await creating user in DB
-    const user = await User.create({
+    // signIn as User
+    if (!isInstructor) {
+      // await creating user in DB
+      const user = await User.create({
+        email,
+        password,
+        username,
+        profile,
+      });
+      const token = createToken(user._id, user.role);
+      res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+      res.status(200).json({ user: user._id, profile: user.profile });
+    }
+
+    // signIn as Instructor
+    const instructor = await Instructor.create({
       email,
       password,
       username,
       profile,
     });
+    const token = createToken(instructor._id, instructor.role);
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(200).json({ user: instructor._id, profile: instructor.profile });
 
     // generate a jwt
-    const token = createToken(user._id, user.role);
-
-    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
 
     // send user obj back
-    res.status(200).json({ user: user._id, profile: user.profile });
   } catch (error) {
     const errors = handleError(error);
     res.status(400).json({ errors });
@@ -96,16 +110,25 @@ module.exports.admin_signup_post = async (req, res) => {
 };
 
 module.exports.login_post = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, isInstructor } = req.body;
 
   try {
-    const user = await User.login(email, password);
+    if (!isInstructor) {
+      const user = await User.login(email, password);
 
-    const token = createToken(user._id, user.role);
+      const token = createToken(user._id, user.role);
+
+      res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+
+      res.status(200).json({ user: user._id, profile: user.profile });
+    }
+
+    const instructor = await Instructor.login(email, password);
+    const token = createToken(instructor._id, instructor.role);
 
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
 
-    res.status(200).json({ user: user._id, profile: user.profile });
+    res.status(200).json({ user: instructor._id, profile: instructor.profile });
   } catch (err) {
     const errors = handleError(err);
     res.status(400).json({ errors });

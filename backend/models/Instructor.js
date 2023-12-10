@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 const bcrypt = require("bcrypt");
 
-const adminSchema = mongoose.Schema({
+const instructorSchema = mongoose.Schema({
   username: {
     type: String,
     unique: true,
@@ -24,7 +24,7 @@ const adminSchema = mongoose.Schema({
   role: {
     type: String,
     enum: ["admin", "instructor", "member"],
-    default: "admin",
+    default: "instructor",
   },
   profile: {
     firstName: String,
@@ -35,21 +35,21 @@ const adminSchema = mongoose.Schema({
 
 //fire a function before creating the user
 // this => User so you must use a normal function and not an arrow one
-adminSchema.pre("save", async function (next) {
+instructorSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
 // static method to logion user
-adminSchema.statics.login = async function (email, password) {
-  const admin = await this.findOne({ email });
+instructorSchema.statics.login = async function (email, password) {
+  const instructor = await this.findOne({ email });
 
-  if (admin) {
-    console.log(admin.password);
-    const auth = await bcrypt.compare(password, admin.password);
+  if (instructor) {
+    console.log(instructor.password);
+    const auth = await bcrypt.compare(password, instructor.password);
     if (auth) {
-      return admin;
+      return instructor;
     }
     throw Error("Wrong password");
   }
@@ -57,6 +57,6 @@ adminSchema.statics.login = async function (email, password) {
 };
 
 // mongoose uses the model name pluralize it -users- and search for in the database
-const Admin = mongoose.model("admin", adminSchema);
+const Instructor = mongoose.model("instructor", instructorSchema);
 
-module.exports = Admin;
+module.exports = Instructor;
