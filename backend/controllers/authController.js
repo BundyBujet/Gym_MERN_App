@@ -1,5 +1,6 @@
 require("dotenv").config();
 const User = require("../models/Users");
+const Admin = require("../models/Admin");
 const jwt = require("jsonwebtoken");
 
 const handleError = (err) => {
@@ -49,7 +50,12 @@ module.exports.signup_post = async (req, res) => {
   const { email, password, username, profile } = req.body;
   try {
     // await creating user in DB
-    const user = await User.create({ email, password, username, profile });
+    const user = await User.create({
+      email,
+      password,
+      username,
+      profile,
+    });
 
     // generate a jwt
     const token = createToken(user._id, user.role);
@@ -58,6 +64,31 @@ module.exports.signup_post = async (req, res) => {
 
     // send user obj back
     res.status(200).json({ user: user._id, profile: user.profile });
+  } catch (error) {
+    const errors = handleError(error);
+    res.status(400).json({ errors });
+  }
+};
+
+module.exports.admin_signup_post = async (req, res) => {
+  const { email, password, username, profile, role } = req.body;
+  try {
+    // await creating user in DB
+    const admin = await Admin.create({
+      email,
+      password,
+      username,
+      profile,
+      role,
+    });
+
+    // generate a jwt
+    const token = createToken(admin._id, admin.role);
+
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+
+    // send user obj back
+    res.status(200).json({ admin: admin._id, profile: admin.profile });
   } catch (error) {
     const errors = handleError(error);
     res.status(400).json({ errors });
@@ -75,6 +106,23 @@ module.exports.login_post = async (req, res) => {
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
 
     res.status(200).json({ user: user._id, profile: user.profile });
+  } catch (err) {
+    const errors = handleError(err);
+    res.status(400).json({ errors });
+  }
+};
+
+module.exports.admin_Login_post = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const admin = await Admin.login(email, password);
+
+    const token = createToken(admin._id, admin.role);
+
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+
+    res.status(200).json({ admin: admin._id, profile: admin.profile });
   } catch (err) {
     const errors = handleError(err);
     res.status(400).json({ errors });
