@@ -18,7 +18,6 @@ module.exports.get_profile = async (req, res) => {
 module.exports.update_profile = async (req, res) => {
   const { id } = req.userInfo;
   const { profile } = req.body;
-  console.log(profile);
   try {
     const existingUser = await Admin.findById({ _id: id });
     if (!existingUser) {
@@ -34,7 +33,6 @@ module.exports.update_profile = async (req, res) => {
         age: profile.age || age,
       },
     };
-    console.log(updateObject);
 
     const updatedUser = await Admin.findByIdAndUpdate(
       { _id: id },
