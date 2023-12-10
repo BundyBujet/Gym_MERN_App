@@ -24,7 +24,7 @@ const authorizeUser = (req, res, next) => {
 
   if (token) {
     const userInfo = verifyTokenRole(token);
-    console.log(userInfo.role);
+    console.log("LogeIn As:", userInfo.role);
     if (userInfo.role === "member") {
       // attach the user info to the req body
       req.userInfo = userInfo;
@@ -42,7 +42,7 @@ const authorizeAdmin = (req, res, next) => {
 
   if (token) {
     const userInfo = verifyTokenRole(token);
-    console.log(userInfo.role);
+    console.log("LogeIn As:", userInfo.role);
     if (userInfo.role === "admin") {
       // attach the user info to the req body
       req.userInfo = userInfo;
