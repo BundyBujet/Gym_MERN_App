@@ -7,7 +7,7 @@ const classSchema = new mongoose.Schema({
   },
   instructor: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // Reference to the User model for the instructor
+    ref: "instructor", // Reference to the instructor model for enrolled members
     required: true,
   },
   description: String,
@@ -37,7 +37,7 @@ const classSchema = new mongoose.Schema({
   enrolledMembers: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Reference to the User model for enrolled members
+      ref: "user", // Reference to the user model for enrolled members
     },
   ],
 });

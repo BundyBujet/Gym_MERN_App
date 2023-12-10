@@ -61,7 +61,7 @@ module.exports.get_one_gym_class = async (req, res) => {
 
 module.exports.get_all_gym_class = async (req, res) => {
   try {
-    const allClasses = await GymClass.find();
+    const allClasses = await GymClass.find().populate("instructor");
     if (!allClasses) {
       res.status(404).json({ status: "Class not Found" });
     }
