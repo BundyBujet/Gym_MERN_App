@@ -67,9 +67,13 @@ module.exports.update_user = async (req, res) => {
     }
 
     // update user ifo and return updated user
-    const updatedUser = await User.findByIdAndUpdate(userId, updatedUserData, {
-      new: true,
-    });
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updatedUserData },
+      {
+        new: true,
+      }
+    );
 
     res.status(200).json(updatedUser);
   } catch (error) {

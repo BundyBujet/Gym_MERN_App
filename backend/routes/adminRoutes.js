@@ -26,6 +26,12 @@ router.put(
 );
 router.get("/api/admin/profile", authorizeAdmin, profileController.get_profile);
 
+router.put(
+  "/api/admin/profile",
+  authorizeAdmin,
+  profileController.update_profile
+);
+
 // create a Gym's Class
 router.post(
   "/api/admin/gymClass",
