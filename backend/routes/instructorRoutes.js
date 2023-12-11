@@ -34,3 +34,5 @@ router.delete(
   authorizeInstructor,
   classController.delete_one_gym_class
 );
+
+module.exports = router;

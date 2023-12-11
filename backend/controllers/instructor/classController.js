@@ -1,8 +1,7 @@
 const GymClass = require("../../models/Classes");
 
 module.exports.create_gym_class = async (req, res) => {
-  const { name, instructor, description, schedule, capacity, enrolledMembers } =
-    req.body;
+  const { name, instructor, description, schedule, capacity } = req.body;
   try {
     const gymClass = await GymClass.create({
       name,
@@ -10,14 +9,17 @@ module.exports.create_gym_class = async (req, res) => {
       description,
       schedule,
       capacity,
-      enrolledMembers,
     });
 
     if (!gymClass) {
       res.status(404).json({ status: "Class not Found" });
     }
+    const populatedClass = await gymClass.populate({
+      path: "instructor user",
+      select: "profile",
+    });
 
-    res.status(200).json(gymClass);
+    res.status(200).json(populatedClass);
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ status: "Can't access DB" });
@@ -51,7 +53,10 @@ module.exports.get_one_gym_class = async (req, res) => {
   const classId = req.params.classId;
 
   try {
-    const existingClass = await GymClass.findById({ _id: classId });
+    const existingClass = await GymClass.findById({ _id: classId }).populate({
+      path: "instructor enrolledMembers",
+      select: "username", // Add other fields as needed it takes space separated values
+    });
     if (!existingClass) {
       res.status(404).json({ status: "Class not Found" });
     }
@@ -65,7 +70,10 @@ module.exports.get_one_gym_class = async (req, res) => {
 
 module.exports.get_all_gym_class = async (req, res) => {
   try {
-    const allClasses = await GymClass.find().populate("instructor");
+    const allClasses = await GymClass.find().populate({
+      path: "instructor",
+      select: "username", // Add other fields as needed it takes space separated values
+    });
     if (!allClasses) {
       res.status(404).json({ status: "Class not Found" });
     }

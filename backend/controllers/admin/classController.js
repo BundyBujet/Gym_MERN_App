@@ -17,7 +17,12 @@ module.exports.create_gym_class = async (req, res) => {
       res.status(404).json({ status: "Class not Found" });
     }
 
-    res.status(200).json(gymClass);
+    const populatedClass = await gymClass.populate({
+      path: "instructor enrolledMembers",
+      select: "profile",
+    });
+
+    res.status(200).json(populatedClass);
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ status: "Can't access DB" });
@@ -51,7 +56,10 @@ module.exports.get_one_gym_class = async (req, res) => {
   const classId = req.params.classId;
 
   try {
-    const existingClass = await GymClass.findById({ _id: classId });
+    const existingClass = await GymClass.findById({ _id: classId }).populate({
+      path: "instructor enrolledMembers",
+      select: "profile",
+    });
     if (!existingClass) {
       res.status(404).json({ status: "Class not Found" });
     }
@@ -65,7 +73,10 @@ module.exports.get_one_gym_class = async (req, res) => {
 
 module.exports.get_all_gym_class = async (req, res) => {
   try {
-    const allClasses = await GymClass.find().populate("instructor");
+    const allClasses = await GymClass.find().populate({
+      path: "instructor enrolledMembers",
+      select: "profile",
+    });
     if (!allClasses) {
       res.status(404).json({ status: "Class not Found" });
     }
