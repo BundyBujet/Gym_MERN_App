@@ -3,6 +3,8 @@ const { authorizeAdmin } = require("../middleware/authMiddleware");
 const userController = require("../controllers/admin/usersController");
 const profileController = require("../controllers/admin/profileController");
 const classController = require("../controllers/admin/classController");
+const equipmentController = require("../controllers/admin/equipmentController");
+const instructorsController = require("../controllers/admin/instructorController");
 
 const router = Router();
 // user controlled Routes
@@ -63,6 +65,58 @@ router.delete(
   "/api/admin/gymClass/:classId",
   authorizeAdmin,
   classController.delete_one_gym_class
+);
+
+// equipments Routes
+
+router.get(
+  "/api/admin/equipment",
+  authorizeAdmin,
+  equipmentController.get_all_equipments
+);
+router.get(
+  "/api/admin/equipment/:equipmentId",
+  authorizeAdmin,
+  equipmentController.get_one_equipment
+);
+router.post(
+  "/api/admin/equipment",
+  authorizeAdmin,
+  equipmentController.create_equipment
+);
+router.put(
+  "/api/admin/equipment/:equipmentId",
+  authorizeAdmin,
+  equipmentController.update_equipments
+);
+router.delete(
+  "/api/admin/equipment/:equipmentId",
+  authorizeAdmin,
+  equipmentController.delete_equipments
+);
+
+// instructors
+router.get(
+  "/api/admin/getInstructors",
+  authorizeAdmin,
+  instructorsController.get_All_instructors
+);
+
+router.get(
+  "/api/admin/instructor/:instructorId",
+  authorizeAdmin,
+  instructorsController.get_One_instructor
+);
+
+router.delete(
+  "/api/admin/instructor/:instructorId",
+  authorizeAdmin,
+  instructorsController.delete_One_instructor
+);
+router.put(
+  "/api/admin/instructor/:instructorId",
+  authorizeAdmin,
+  instructorsController.update_instructor
 );
 
 module.exports = router;

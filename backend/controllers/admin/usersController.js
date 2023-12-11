@@ -3,13 +3,15 @@ const User = require("../../models/Users");
 module.exports.get_All_users = async (req, res) => {
   try {
     // query all users in the Database
-    const allUsers = await User.find();
+    const allUsers = await User.find(
+      {},
+      { username: 1, profile: 1, _id: 1, role: 1 }
+    );
 
-    if (allUsers) {
-      res.status(200).json(allUsers);
-    } else {
-      res.status(200).json({ status: "No Users In DB" });
+    if (!allUsers) {
+      res.status(404).json({ status: "No Users In DB" });
     }
+    res.status(200).json(allUsers);
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ status: "Can't access DB" });
