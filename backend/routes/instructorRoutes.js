@@ -29,6 +29,12 @@ router.get(
   classController.get_all_gym_class
 );
 
+router.get(
+  "/api/classAttendance/:classId",
+  authorizeInstructor,
+  classController.get_class_attendance
+);
+
 router.delete(
   "/api/gymClass/:classId",
   authorizeInstructor,

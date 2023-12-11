@@ -68,6 +68,28 @@ module.exports.get_one_gym_class = async (req, res) => {
   }
 };
 
+module.exports.get_class_attendance = async (req, res) => {
+  const classId = req.params.classId;
+
+  try {
+    const existingClass = await GymClass.findById(
+      { _id: classId },
+      { enrolledMembers: 1 }
+    ).populate({
+      path: "enrolledMembers",
+      select: "profile username", // Add other fields as needed it takes space separated values
+    });
+    if (!existingClass) {
+      res.status(404).json({ status: "Class not Found" });
+    }
+
+    res.status(200).json(existingClass);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ status: "Can't access DB" });
+  }
+};
+
 module.exports.get_all_gym_class = async (req, res) => {
   try {
     const allClasses = await GymClass.find().populate({
