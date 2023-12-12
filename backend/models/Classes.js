@@ -59,6 +59,8 @@ classSchema.post("findOneAndUpdate", async function (result, next) {
       console.log("Class Full");
       await updatedClass.save(); // Save the updated document
     } else {
+      updatedClass.isFull = false;
+      await updatedClass.save(); // Save the updated document
       console.log("Available");
     }
 
