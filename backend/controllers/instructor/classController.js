@@ -15,7 +15,7 @@ module.exports.create_gym_class = async (req, res) => {
       res.status(404).json({ status: "Class not Found" });
     }
     const populatedClass = await gymClass.populate({
-      path: "instructor user",
+      path: "instructor enrolledMembers",
       select: "profile",
     });
 

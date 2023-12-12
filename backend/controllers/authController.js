@@ -121,14 +121,16 @@ module.exports.login_post = async (req, res) => {
       res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
 
       res.status(200).json({ user: user._id, profile: user.profile });
+    } else {
+      const instructor = await Instructor.login(email, password);
+      const token = createToken(instructor._id, instructor.role);
+
+      res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+
+      res
+        .status(200)
+        .json({ user: instructor._id, profile: instructor.profile });
     }
-
-    const instructor = await Instructor.login(email, password);
-    const token = createToken(instructor._id, instructor.role);
-
-    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-
-    res.status(200).json({ user: instructor._id, profile: instructor.profile });
   } catch (err) {
     const errors = handleError(err);
     res.status(400).json({ errors });

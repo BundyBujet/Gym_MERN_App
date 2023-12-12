@@ -5,6 +5,8 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/authRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const instructorRoutes = require("./routes/instructorRoutes");
+const userRouters = require("./routes/userRoutes");
+
 const {
   authorizeUser,
   authorizeAdmin,
@@ -30,6 +32,7 @@ mongoose
 app.use(authRoutes);
 app.use(adminRoutes);
 app.use(instructorRoutes);
+app.use(userRouters);
 
 app.get("/profile", authorizeUser, (req, res) =>
   res.json({ res: "Profile Page" })

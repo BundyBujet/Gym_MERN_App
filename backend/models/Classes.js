@@ -40,6 +40,33 @@ const classSchema = new mongoose.Schema({
       ref: "user", // Reference to the user model for enrolled members
     },
   ],
+  isFull: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+classSchema.post("findOneAndUpdate", async function (result, next) {
+  try {
+    // Use `result` to access the updated document
+    const updatedClass = await this.model.findOne(this.getQuery());
+
+    if (
+      updatedClass &&
+      updatedClass.capacity === updatedClass.enrolledMembers.length
+    ) {
+      updatedClass.isFull = true;
+      console.log("Class Full");
+      await updatedClass.save(); // Save the updated document
+    } else {
+      console.log("Available");
+    }
+
+    next();
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 });
 
 const GymClass = mongoose.model("gymClass", classSchema);
